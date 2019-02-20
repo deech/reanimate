@@ -1,12 +1,28 @@
 # reanimate
 
 Reanimate is a reactive framework for creating non-interactive animations from SVG images.
-This package consists of a set of arrow combinators, a renderer (using ffmpeg), and a Gtk-based
+This package consists of a set of arrow combinators, a renderer (using ffmpeg), and a [FLTKHS-based](http://hackage.haskell.org/package/fltkhs)
 previewer. Inline latex code is supported when 'latex' and 'dvisvgm' are installed.
 
 Nothing about the API is stable at this point.
 
 The example gifs are displayed at 25 fps.
+
+
+# Installation
+This fork uses [FLTKHS](http://hackage.haskell.org/package/fltkhs) instead of
+GTK as the viewer. 
+To build:
+
+``` sh
+stack build --flag fltkhs:bundled
+```
+
+... and to run the GUI:
+
+``` sh
+stack exec reanimate-viewer
+```
 
 # TODO
 

@@ -11,7 +11,15 @@ maintainer:          lemmih@gmail.com
 category:            Graphics
 build-type:          Simple
 extra-source-files:  ChangeLog.md
-cabal-version:       >=1.10
+cabal-version:       >=2
+build-type:          Custom
+custom-setup
+  setup-depends:
+      Cabal >=2.2.0.0 && <3
+    , asset-bundle >=0.1.0.0
+    , base >=4.4
+    , directory
+    , filepath
 
 library
   hs-source-dirs:     src
@@ -20,7 +28,6 @@ library
                       Reanimate.Render
                       Reanimate.Examples
                       Reanimate.Combinators
-                      Reanimate.LaTeX
                       Reanimate.Svg
                       Reanimate.Transform
   other-modules:      Reanimate.Misc
@@ -30,12 +37,12 @@ library
                        containers, svg-tree >= 0.6.2.3, xml, bytestring, lens, linear, mtl, matrix,
                        JuicyPixels, attoparsec
 
-Flag gtk-viewer
-  Description: Enable gtk-based viewer
-  Default:     True
+Flag fltkhs-viewer
+  Description: Enable fltkhs-based viewer
+  Default: True
 
 executable reanimate-viewer
-  if flag(gtk-viewer)
+  if flag(fltkhs-viewer)
     buildable:       True
   else
     buildable:       False
@@ -45,14 +52,24 @@ executable reanimate-viewer
                       Reanimate.Render
                       Reanimate.Examples
                       Reanimate.Combinators
-                      Reanimate.LaTeX
                       Reanimate.Svg
                       Reanimate.Misc
                       Reanimate.Transform
                       Reanimate.Svg.NamedColors
-  build-depends:       base >=4.10 && <4.13, cairo >=0.13 && <0.14, gtk,
-                       svgcairo, lucid-svg, time, text, unix, lucid, reanimate,
+  build-depends:       base >=4.10 && <4.13, lucid-svg, time, text, unix, lucid, reanimate,
                        filepath, process, directory, containers, svg-tree >= 0.6.2.3, xml,
-                       bytestring, lens, linear, mtl, matrix,JuicyPixels, attoparsec
-  hs-source-dirs:      src
+                       bytestring, lens, linear, mtl, matrix,JuicyPixels, attoparsec,
+                       fltkhs >=0.7.0.1,
+                       fltkhs-themes >=0.1.0.2,
+                       load-font >=0.1.0.2,
+                       text >=1.2.2.0
+  hs-source-dirs:     src
+  if impl(ghc >= 7.10) && impl(ghc < 8.0) && flag(fastCompile)
+    ghc-options: -fno-specialise -fmax-simplifier-iterations=0 -fsimplifier-phases=0
+  else
+    ghc-options: -O2
+  if (os(linux) || os(windows))
+    ghc-options: -pgml g++ "-optl-Wl,--allow-multiple-definition" "-optl-Wl,--whole-archive" "-optl-Wl,-Bstatic" "-optl-Wl,-lfltkc" "-optl-Wl,-Bdynamic" "-optl-Wl,--no-whole-archive"
+  else
+    ghc-options: -optl-Wl,-lfltkc
   default-language:    Haskell2010
